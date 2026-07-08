@@ -1,0 +1,34 @@
+name: 매일 카카오 해시태그 데이터 갱신
+
+on:
+  schedule:
+    - cron: '0 21 * * *'   # UTC 21:00 = KST 06:00 (매일 새벽 6시)
+  workflow_dispatch:         # 수동 실행 버튼도 허용
+
+permissions:
+  contents: write            # data.json 커밋을 위해 필요
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: 데이터 수집
+        run: node scrape.mjs
+
+      - name: 변경분 커밋
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/data.json cache/hashtags.json
+          if git diff --staged --quiet; then
+            echo "변경 없음 — 커밋 생략"
+          else
+            git commit -m "chore: 데이터 자동 갱신 ($(date -u +%Y-%m-%d))"
+            git push
+          fi
