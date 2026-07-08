@@ -1,0 +1,11 @@
+{
+  "name": "kakao-hashtag-rank",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "카카오 이모티콘 인기 순위를 해시태그(스타일)별로 집계·분석하는 자동 갱신 사이트",
+  "scripts": {
+    "scrape": "node scrape.mjs",
+    "dev": "cd public && python3 -m http.server 8877"
+  }
+}

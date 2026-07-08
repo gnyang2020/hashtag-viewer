@@ -1,0 +1,16 @@
+{
+  "name": "[쥐냥] 해시태그 뷰어",
+  "short_name": "hashtag viewer",
+  "description": "카카오 이모티콘 인기 순위를 해시태그(스타일)별로 분석하는 뷰어",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#AEFF86",
+  "lang": "ko",
+  "icons": [
+    { "src": "favicon.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "favicon.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "favicon.png", "sizes": "1080x1080", "type": "image/png", "purpose": "any" }
+  ]
+}

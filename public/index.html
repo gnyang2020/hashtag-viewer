@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<!-- 돈잘콘 임베드 전용 가드: 돈잘콘 안에서 열렸을 때만 작동. 직접 링크/외부 임베드 차단 (로컬 개발은 예외) -->
+<script>
+(function () {
+  var selfHost = location.hostname;
+  if (!selfHost || /^(localhost|127\.0\.0\.1|\[::1\])$/.test(selfHost)) return;
+  function parentOrigin() {
+    try {
+      var ao = location.ancestorOrigins;
+      if (ao && ao.length) return ao[0];
+      if (document.referrer) return new URL(document.referrer).origin;
+    } catch (e) {}
+    return '';
+  }
+  var inIframe = window.self !== window.top;
+  var pHost = '';
+  try { pHost = new URL(parentOrigin()).hostname; } catch (e) {}
+  var allowed = inIframe && (
+    /^donjalcon(-[a-z0-9-]+)?\.vercel\.app$/i.test(pHost) ||
+    /^(localhost|127\.0\.0\.1)$/.test(pHost)
+  );
+  if (allowed) return;
+  var dest = 'https://donjalcon.vercel.app/tools/hashtag-viewer';
+  if (window.top === window.self) { location.replace(dest); return; }
+  try { window.stop(); } catch (e) {}
+  document.documentElement.innerHTML =
+    '<head><meta charset="utf-8"></head>' +
+    '<body style="margin:0;font-family:-apple-system,system-ui,sans-serif;display:flex;min-height:100vh;align-items:center;justify-content:center;background:#f5f5f5;color:#1a1a1a;text-align:center;padding:24px">' +
+    '<div><div style="font-size:18px;font-weight:800;margin-bottom:8px">돈잘콘 전용 도구입니다</div>' +
+    '<div style="font-size:14px;color:#666;margin-bottom:20px">해시태그 뷰어는 돈잘콘에서 로그인 후 이용할 수 있어요.</div>' +
+    '<a href="' + dest + '" target="_top" style="display:inline-block;background:#1a1a1a;color:#fff;padding:12px 20px;border-radius:10px;font-weight:700;text-decoration:none;font-size:14px">돈잘콘에서 열기</a>' +
+    '</div></body>';
+})();
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>[쥐냥] 해시태그 뷰어</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="favicon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="해시태그 뷰어">
+<meta name="theme-color" content="#AEFF86">
+<meta property="og:type" content="website">
+<meta property="og:title" content="[쥐냥] 해시태그 뷰어">
+<meta property="og:description" content="카카오 이모티콘 인기 순위를 해시태그(스타일)별로 분석하는 뷰어">
+<meta property="og:image" content="favicon.png">
+<meta property="og:locale" content="ko_KR">
+<style>
+  :root {
+    --bg:#f6f7f9; --card:#ffffff; --ink:#1f2328; --sub:#6b7280; --line:#e5e7eb;
+    --lime:#AEFF86; --lime-2:#9bf56d; --lime-soft:#ecffe1; --lime-line:#bdf0a0; --lime-ink:#2f6d13;
+    --shadow:0 1px 3px rgba(0,0,0,.05), 0 1px 0 rgba(0,0,0,.02);
+    --c1:#4f6bed; --c2:#12a594; --c4:#f5972b; --c5:#e8598b; --c10:#3aa657;
+    --c11:#8b5cf6; --c12:#64748b; --c13:#e5484d; --c21:#0ea5c4; --c23:#5bbb2e; --c0:#9aa2ac;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; padding:0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.5;
+    -webkit-font-smoothing: antialiased; word-break: keep-all;
+  }
+  a { color: inherit; text-decoration: none; }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 28px 18px 80px; }
+
+  /* 헤더 */
+  header h1 { font-size:22px; font-weight:800; margin:0 0 6px; letter-spacing:-.5px; }
+  header .sub { color:var(--sub); font-size:13px; }
+  header p.desc { margin:12px 0 0; color:#4b5563; font-size:13.5px; }
+  .site-footer { margin-top:32px; padding:16px 12px; font-size:11px; color:#999; text-align:center; letter-spacing:.04em; }
+  .badge { display:inline-block; margin-top:12px; background:var(--lime-soft); color:var(--lime-ink);
+    border:1px solid var(--lime-line); padding:4px 12px; border-radius:999px; font-size:11px; font-weight:800; letter-spacing:.03em; }
+
+  /* 안내 바 (클릭 → 가이드 팝업) */
+  .notice-bar { display:flex; align-items:center; gap:9px; padding:12px 15px; background:var(--lime-soft);
+    border:1.5px solid var(--lime-line); border-radius:12px; cursor:pointer; margin-top:16px; transition:.15s; }
+  .notice-bar:hover { background:#e2ffd2; }
+  .notice-bar .ic { font-size:15px; }
+  .notice-bar .tx { font-size:12.5px; font-weight:700; color:var(--lime-ink); }
+  .notice-bar .tx b { color:#1f7a12; }
+  .notice-bar .go { margin-left:auto; font-size:12px; font-weight:800; color:var(--lime-ink); }
+
+  /* 팝업 */
+  .ovl { display:none; position:fixed; inset:0; background:rgba(0,0,0,.42); z-index:1000; align-items:center; justify-content:center; padding:16px; }
+  .ovl.on { display:flex; }
+  .pop { background:#fff; border-radius:18px; padding:22px 20px 18px; width:100%; max-width:500px; max-height:84vh;
+    overflow:hidden; position:relative; box-shadow:0 12px 48px rgba(0,0,0,.24); display:flex; flex-direction:column; }
+  .pop .x { position:absolute; top:14px; right:15px; background:none; border:0; font-size:21px; color:#9ca3af; cursor:pointer; line-height:1; }
+  .pop .x:hover { color:#374151; }
+  .pop .ph { display:flex; align-items:center; gap:9px; margin-bottom:14px; }
+  .pop .ph img { width:30px; height:30px; border-radius:8px; }
+  .pop .ph b { font-size:15px; font-weight:800; }
+  .ptabs { display:flex; gap:6px; margin-bottom:14px; }
+  .ptab { flex:1; padding:9px 10px; border:2px solid var(--line); border-radius:9px; background:#fff; color:#9ca3af;
+    font-size:12.5px; font-weight:800; cursor:pointer; text-align:center; font-family:inherit; transition:.15s; }
+  .ptab.on { border-color:var(--lime-2); background:var(--lime-soft); color:var(--lime-ink); }
+  .pscroll { flex:1; overflow-y:auto; font-size:13px; color:#4b5563; line-height:1.7; padding-right:4px; }
+  .pscroll h3 { font-size:13.5px; font-weight:800; color:#1f2937; margin:16px 0 6px; display:flex; align-items:center; gap:6px; }
+  .pscroll h3:first-child { margin-top:0; }
+  .pscroll b { color:#1f2937; }
+  .pbox { border-radius:11px; padding:12px 13px; font-size:12.5px; line-height:1.75; margin:8px 0; }
+  .pbox.lime { background:var(--lime-soft); border:1.5px dashed var(--lime-line); }
+  .pbox.warn { background:#fff8e6; border:1.5px dashed #fcd34d; }
+  .pbox .t { font-weight:800; color:#1f2937; margin-bottom:3px; }
+
+  /* 모드 탭 */
+  .modes { display:flex; gap:4px; margin:16px 0 4px; background:var(--card); padding:4px; border-radius:14px; box-shadow:var(--shadow); }
+  .mode { flex:1; border:none; background:none; font-weight:800; font-size:13.5px; color:var(--sub);
+    padding:11px 6px; border-radius:10px; cursor:pointer; transition:.15s; white-space:nowrap; font-family:inherit; }
+  .mode.on { background:var(--lime); color:#173d05; box-shadow:0 1px 2px rgba(0,0,0,.1); }
+
+  .controls { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:16px; flex-wrap:wrap; }
+  .cats { display:flex; gap:6px; overflow-x:auto; flex:1; scrollbar-width:none; padding-bottom:2px; min-width:0; }
+  .cats::-webkit-scrollbar { display:none; }
+  .chip { flex:0 0 auto; border:1.5px solid var(--line); background:var(--card); color:var(--sub);
+    font-size:12.5px; font-weight:700; padding:6px 11px; border-radius:999px; cursor:pointer; display:flex; align-items:center; gap:6px; white-space:nowrap; font-family:inherit; }
+  .chip.on { color:var(--ink); border-color:currentColor; }
+  .chip .sw { width:9px; height:9px; border-radius:2px; }
+
+  .metric { display:flex; background:var(--card); border-radius:999px; padding:3px; box-shadow:var(--shadow); flex:0 0 auto; }
+  .metric button { border:none; background:none; font-size:12.5px; font-weight:700; color:var(--sub); padding:5px 12px; border-radius:999px; cursor:pointer; font-family:inherit; }
+  .metric button.on { background:var(--lime); color:#173d05; }
+
+  .summary { background:var(--card); border-radius:14px; padding:16px; box-shadow:var(--shadow); margin-top:16px; }
+  .summary .lead { font-size:13.5px; color:#4b5563; margin:0 0 10px; }
+  .summary .lead b { color:var(--ink); }
+  .catbars { display:flex; flex-direction:column; gap:7px; }
+  .catrow { display:grid; grid-template-columns:92px 1fr auto; align-items:center; gap:8px; font-size:12.5px; }
+  .catrow .nm { color:var(--sub); font-weight:600; text-align:right; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .catrow .track { height:8px; background:var(--bg); border-radius:6px; overflow:hidden; }
+  .catrow .fill { height:100%; border-radius:6px; }
+  .catrow .val { font-variant-numeric:tabular-nums; color:var(--sub); font-weight:700; min-width:40px; text-align:right; }
+
+  h2.sec { font-size:15px; font-weight:800; margin:24px 2px 12px; letter-spacing:-.01em; }
+  h2.sec small { font-weight:600; color:var(--sub); font-size:12px; margin-left:6px; }
+
+  .bars { display:flex; flex-direction:column; gap:9px; }
+  .bar { background:var(--card); border-radius:12px; padding:11px 13px; box-shadow:var(--shadow); cursor:pointer; transition:.12s; border:1.5px solid transparent; }
+  .bar:hover { transform:translateY(-1px); }
+  .bar.open { border-color:var(--lime-2); }
+  .bar .top { display:flex; align-items:center; gap:9px; }
+  .bar .rk { font-size:12px; font-weight:800; color:var(--sub); width:26px; font-variant-numeric:tabular-nums; }
+  .bar .tag { font-weight:700; font-size:14px; }
+  .bar .cat { font-size:10.5px; font-weight:700; padding:2px 7px; border-radius:6px; color:#fff; }
+  .bar .num { margin-left:auto; font-weight:800; font-variant-numeric:tabular-nums; font-size:14px; }
+  .bar .num small { font-weight:600; color:var(--sub); font-size:11px; margin-left:3px; }
+  .bar .chev { color:var(--sub); font-size:15px; font-weight:800; margin-left:2px; transition:transform .15s; display:inline-block; }
+  .bar.open .chev { transform:rotate(90deg); color:var(--lime-ink); }
+  .bar .peek { color:#8a929c; font-weight:600; }
+  .bar.open .peek { color:var(--lime-ink); font-weight:700; }
+  .bar .track { height:9px; background:var(--bg); border-radius:6px; margin-top:9px; overflow:hidden; }
+  .bar .fill { height:100%; border-radius:6px; transition:width .4s cubic-bezier(.2,.7,.3,1); }
+  .bar .sub2 { font-size:11.5px; color:var(--sub); margin-top:6px; }
+
+  .emgrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(158px,1fr)); gap:10px; margin-top:12px; }
+  .drill { margin-top:10px; padding-top:10px; border-top:1px dashed var(--line); display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:8px; }
+  .emcard { background:var(--card); border-radius:12px; box-shadow:var(--shadow); overflow:hidden; display:flex; flex-direction:column; transition:.12s; border:1.5px solid transparent; }
+  .emcard:hover { transform:translateY(-2px); border-color:var(--lime-2); }
+  .emcard .thumb { position:relative; background:#fff; aspect-ratio:1/1; display:flex; align-items:center; justify-content:center; border-bottom:1px solid var(--line); }
+  .emcard .thumb img { width:78%; height:78%; object-fit:contain; }
+  .emcard .rank { position:absolute; top:7px; left:7px; font-size:11px; font-weight:800; color:#173d05; background:var(--lime); border-radius:6px; padding:1px 7px; }
+  .emcard .ext { position:absolute; top:7px; right:7px; font-size:10px; color:var(--sub); background:#fff; border-radius:6px; padding:1px 5px; box-shadow:var(--shadow); }
+  .emcard .info { padding:8px 10px 10px; }
+  .emcard .title { font-size:12.5px; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .emcard .creator { font-size:11px; color:var(--sub); margin-bottom:6px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .emcard .tgs { display:flex; flex-wrap:wrap; gap:3px; }
+  .emcard .tg { font-size:9.5px; font-weight:700; color:#fff; border-radius:5px; padding:1px 5px; }
+  .emcard .tg.match { outline:2px solid var(--ink); }
+
+  .agepick { display:flex; flex-wrap:wrap; gap:6px; margin-top:14px; }
+  .agepick .ab { border:1.5px solid var(--line); background:var(--card); color:var(--sub); font-weight:700;
+    font-size:13px; padding:8px 14px; border-radius:999px; cursor:pointer; font-family:inherit; }
+  .agepick .ab.on { background:var(--lime); color:#173d05; border-color:var(--lime-2); }
+  .hint { font-size:12px; color:var(--sub); margin:10px 2px 0; }
+
+  .matrixwrap { margin-top:14px; overflow-x:auto; background:var(--card); border-radius:14px; box-shadow:var(--shadow); }
+  table.mx { border-collapse:collapse; width:100%; font-size:12.5px; }
+  table.mx th, table.mx td { padding:8px 6px; text-align:center; border-bottom:1px solid var(--line); }
+  table.mx thead th { position:sticky; top:0; background:var(--card); font-weight:800; color:var(--ink); font-size:12px; white-space:nowrap; }
+  table.mx th.tagcol, table.mx td.tagcol { text-align:left; position:sticky; left:0; background:var(--card); z-index:2; min-width:132px; }
+  table.mx thead th.tagcol { z-index:3; }
+  .tagcell { display:flex; align-items:center; gap:6px; font-weight:700; }
+  .tagcell .sw { width:8px; height:8px; border-radius:2px; flex:0 0 auto; }
+  .tagcell .nm { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .cell { font-weight:800; font-variant-numeric:tabular-nums; border-radius:7px; display:inline-block; padding:5px 0; width:46px; }
+  .cell.empty { color:#c4c8ce; font-weight:600; }
+  .cell small { display:block; font-weight:600; font-size:9.5px; opacity:.85; }
+
+  .tagbox { background:var(--card); border-radius:14px; box-shadow:var(--shadow); padding:14px; margin-top:14px; }
+  .tagbox .hd { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; gap:8px; }
+  .tagbox .hd b { font-size:13.5px; }
+  .tagbox .reset { font-size:12px; color:var(--sub); background:var(--bg); border:none; border-radius:999px; padding:5px 11px; cursor:pointer; font-weight:700; font-family:inherit; flex:0 0 auto; }
+  .tgroup { margin-top:10px; }
+  .tgroup .gl { font-size:11px; font-weight:800; color:var(--sub); margin-bottom:6px; display:flex; align-items:center; gap:5px; }
+  .tgroup .gl .sw { width:8px; height:8px; border-radius:2px; }
+  .tgwrap { display:flex; flex-wrap:wrap; gap:6px; }
+  .tgpick { border:1.5px solid var(--line); background:#fff; color:var(--ink); font-size:12px; font-weight:600;
+    border-radius:999px; padding:5px 11px; cursor:pointer; display:flex; align-items:center; gap:5px; font-family:inherit; }
+  .tgpick .n { color:var(--sub); font-weight:700; font-size:11px; }
+  .tgpick.on { color:#fff; border-color:transparent; }
+  .tgpick.on .n { color:rgba(255,255,255,.85); }
+  .findhead { display:flex; align-items:center; gap:8px; margin:18px 2px 4px; font-weight:800; font-size:14.5px; flex-wrap:wrap; }
+  .findhead .cnt { color:#173d05; background:var(--lime); border-radius:999px; padding:2px 11px; font-size:13px; }
+  .findhead .sel { font-size:12px; font-weight:600; color:var(--sub); }
+
+  footer { margin-top:34px; font-size:11.5px; color:var(--sub); line-height:1.6; }
+  footer .gl { color:var(--lime-ink); font-weight:700; cursor:pointer; }
+  .loading { text-align:center; padding:60px 0; color:var(--sub); }
+  .empty-msg { text-align:center; padding:36px 12px; color:var(--sub); font-size:13px; }
+  .hide { display:none !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>[쥐냥] 해시태그 뷰어</h1>
+    <div class="sub">카카오 이모티콘 인기 순위를 해시태그(스타일)별로 분석하는 뷰어 · hashtag viewer</div>
+    <span class="badge" id="badge">매일 자동 갱신</span>
+  </header>
+
+  <!-- 안내 바 → 가이드 팝업 -->
+  <div class="notice-bar" id="noticeBar">
+    <span class="ic">📖</span>
+    <span class="tx"><b>사용법 · 안내</b> — 매일 새벽 6시 갱신 · 카카오 사정에 따라 서비스가 종료될 수 있어요</span>
+    <span class="go">보기 ›</span>
+  </div>
+
+  <!-- 모드 -->
+  <div class="modes" id="modes">
+    <button class="mode on" data-mode="all">전체 순위</button>
+    <button class="mode" data-mode="compare">연령별 비교</button>
+    <button class="mode" data-mode="find">태그로 찾기</button>
+  </div>
+
+  <div class="controls" id="controls">
+    <div class="cats" id="cats"></div>
+    <div class="metric" id="metric">
+      <button data-m="score" class="on">순위가중점수</button>
+      <button data-m="count">등장 횟수</button>
+    </div>
+  </div>
+
+  <section id="view-all">
+    <div class="summary" id="summary"></div>
+    <h2 class="sec">해시태그 랭킹 <small id="secsub"></small></h2>
+    <div class="bars" id="bars"><div class="loading">데이터를 불러오는 중…</div></div>
+  </section>
+
+  <section id="view-compare" class="hide">
+    <div class="agepick" id="agepick"></div>
+    <p class="hint">칸의 숫자는 그 연령대에서의 <b>순위</b>(색이 진할수록 상위) · 순위권 밖이면 “–”. 연령대를 눌러 켜고 끌 수 있어요.</p>
+    <div class="matrixwrap"><table class="mx" id="matrix"></table></div>
+  </section>
+
+  <section id="view-find" class="hide">
+    <div class="agepick" id="findage"></div>
+    <div class="tagbox">
+      <div class="hd"><b>태그 선택 <span style="color:var(--sub);font-weight:600">— 여러 개 고르면 모두 포함한 이모티콘만</span></b>
+        <button class="reset" id="tagreset">선택 초기화</button></div>
+      <div id="tagselect"></div>
+    </div>
+    <div class="findhead" id="findhead"></div>
+    <div class="emgrid" id="emgrid"></div>
+  </section>
+
+  <footer>
+    <p><span class="gl" id="footGuide">📖 사용법 · 안내 다시 보기</span></p>
+    <p>이모티콘을 클릭하면 카카오 이모티콘샵 상세 페이지가 새 탭으로 열립니다. 데이터 출처: 카카오 이모티콘샵 인기 순위.</p>
+  </footer>
+
+  <footer class="site-footer">
+    © 2026 G.NYANG. All rights reserved.
+  </footer>
+</div>
+
+<!-- 가이드 팝업 -->
+<div class="ovl" id="ovl">
+  <div class="pop">
+    <button class="x" id="popX">×</button>
+    <div class="ph"><img src="favicon.png" alt=""><b>해시태그 뷰어 사용법 · 안내</b></div>
+    <div class="ptabs">
+      <button class="ptab on" data-tab="how">사용법</button>
+      <button class="ptab" data-tab="info">갱신 · 서비스 안내</button>
+    </div>
+    <div class="pscroll" id="popHow">
+      <p style="margin-top:0">카카오 이모티콘 <b>인기 순위(전체·연령별 200위)</b>에 오른 이모티콘들의 스타일 해시태그를 모아 분석하는 도구예요. 위쪽 3개 탭으로 골라 보세요.</p>
+      <h3>📊 전체 순위</h3>
+      전체 인기 순위에서 <b>어떤 해시태그(스타일)가 강한지</b> 랭킹으로 보여줘요. 막대를 누르면 그 스타일을 가진 인기 이모티콘이 펼쳐집니다.
+      <h3>👥 연령별 비교</h3>
+      같은 해시태그가 <b>연령대별로 몇 위인지</b> 표로 나란히 비교해요. 위의 연령 버튼으로 원하는 연령대만 켜고 끌 수 있고, 칸 색이 <b>진할수록 상위</b>입니다.
+      <h3>🔎 태그로 찾기</h3>
+      태그를 <b>여러 개 체크하면 그 태그를 모두 가진 이모티콘</b>만 걸러줘요. (예: <b>#댕댕이 + #하찮아서_귀여워</b>) 이모티콘을 누르면 카카오 상세 페이지로 이동합니다.
+      <div class="pbox lime">
+        <div class="t">📏 두 가지 점수 뜻</div>
+        <b>순위가중점수</b> — 1위일수록 큰 점수(1위=최고점)를 그 태그의 이모티콘들에서 합산. “<b>얼마나 상위권에 포진했나</b>”.<br>
+        <b>등장 횟수</b> — 순위권 안에 그 태그를 가진 이모티콘 개수. “<b>얼마나 흔한가</b>”.
+      </div>
+    </div>
+    <div class="pscroll hide" id="popInfo">
+      <div class="pbox lime">
+        <div class="t">⏰ 언제 갱신되나요?</div>
+        <b>매일 새벽 6시(한국시간)</b>에 자동으로 최신 인기 순위를 가져와 갱신해요. 그래서 지금 보이는 데이터는 <b>최대 하루 전</b> 기준입니다. (실시간 아님)
+      </div>
+      <div class="pbox warn">
+        <div class="t">⚠️ 서비스가 종료될 수 있어요</div>
+        이 사이트는 <b>카카오 공식 서비스가 아니에요.</b> 카카오 이모티콘샵에 공개된 인기 순위를 <b>자동으로 가져와서</b> 보기 좋게 정리해 보여주는 도구랍니다.<br><br>
+        그래서 <b>카카오 사정에 따라</b>(사이트 구조 변경·데이터 접근 차단 등) 예고 없이 <b>서비스가 종료될 수 있어요.</b> 그 점만 미리 알아두세요.
+      </div>
+      <h3>📮 데이터 출처</h3>
+      카카오 이모티콘샵 인기 순위(전체 + 10·20·30·40·50대 이상) 상위 <b id="infoSize">200</b>위와, 각 이모티콘의 스타일 해시태그.
+    </div>
+  </div>
+</div>
+
+<script>
+const CAT_VAR = {1:'--c1',2:'--c2',4:'--c4',5:'--c5',10:'--c10',11:'--c11',12:'--c12',13:'--c13',21:'--c21',23:'--c23',0:'--c0'};
+const css = getComputedStyle(document.documentElement);
+const catColor = (id) => css.getPropertyValue(CAT_VAR[id] || '--c0').trim() || '#9aa2ac';
+const itemUrl = (slug) => 'https://e.kakao.com/t/' + encodeURIComponent(slug);
+
+let DATA, mode = 'all', cat = 'all', metric = 'score';
+let compareBands = null;
+let findBand = 'ALL', selectedTags = new Set();
+
+fetch('data.json?_=' + Date.now()).then(r => r.json()).then(d => { DATA = d; init(); })
+  .catch(() => { document.getElementById('bars').innerHTML = '<div class="loading">데이터를 불러오지 못했어요. 잠시 후 새로고침해 주세요.</div>'; });
+
+const metricVal = (h) => metric === 'score' ? h.score : h.count;
+const catName = (id) => DATA.categories[id] || '기타';
+
+/* 가이드 팝업 */
+function openPop(){ document.getElementById('ovl').classList.add('on'); }
+function closePop(){ document.getElementById('ovl').classList.remove('on'); }
+document.getElementById('noticeBar').onclick = openPop;
+document.getElementById('footGuide').onclick = openPop;
+document.getElementById('popX').onclick = closePop;
+document.getElementById('ovl').onclick = (e) => { if (e.target.id === 'ovl') closePop(); };
+document.querySelector('.ptabs').onclick = (e) => {
+  const b = e.target.closest('.ptab'); if (!b) return;
+  document.querySelectorAll('.ptab').forEach(x => x.classList.toggle('on', x === b));
+  document.getElementById('popHow').classList.toggle('hide', b.dataset.tab !== 'how');
+  document.getElementById('popInfo').classList.toggle('hide', b.dataset.tab !== 'info');
+};
+
+function init() {
+  const dt = new Date(DATA.updatedAt), f = (n) => String(n).padStart(2, '0');
+  document.getElementById('badge').textContent =
+    `${dt.getFullYear()}.${f(dt.getMonth()+1)}.${f(dt.getDate())} 갱신 · 상위 ${DATA.size}위 기준`;
+  document.getElementById('infoSize').textContent = DATA.size;
+
+  compareBands = DATA.ageBands.map(b => b.key);
+
+  document.getElementById('modes').onclick = e => {
+    const b = e.target.closest('.mode'); if (!b) return;
+    mode = b.dataset.mode;
+    document.querySelectorAll('.mode').forEach(x => x.classList.toggle('on', x === b));
+    document.getElementById('view-all').classList.toggle('hide', mode !== 'all');
+    document.getElementById('view-compare').classList.toggle('hide', mode !== 'compare');
+    document.getElementById('view-find').classList.toggle('hide', mode !== 'find');
+    document.getElementById('controls').classList.toggle('hide', mode === 'find');
+    render();
+  };
+  document.getElementById('metric').onclick = e => {
+    const b = e.target.closest('button'); if (!b) return;
+    metric = b.dataset.m;
+    document.querySelectorAll('#metric button').forEach(x => x.classList.toggle('on', x === b));
+    render();
+  };
+  document.getElementById('tagreset').onclick = () => { selectedTags.clear(); renderFind(); };
+  render();
+}
+
+function renderCats() {
+  const present = new Map();
+  const bands = mode === 'all' ? ['ALL'] : (compareBands.length ? compareBands : ['ALL']);
+  bands.forEach(bk => DATA.agg[bk].hashtags.forEach(h => present.set(h.categoryId, (present.get(h.categoryId)||0)+h.score)));
+  const ordered = [...present.keys()].sort((a,b)=>present.get(b)-present.get(a));
+  const chip = (id, label) => {
+    const on = String(cat) === String(id);
+    const sw = id === 'all' ? '' : `<span class="sw" style="background:${catColor(id)}"></span>`;
+    const style = on && id!=='all' ? `style="color:${catColor(id)}"` : '';
+    return `<button class="chip ${on?'on':''}" data-c="${id}" ${style}>${sw}${label}</button>`;
+  };
+  document.getElementById('cats').innerHTML =
+    chip('all','전체') + ordered.map(id => chip(id, catName(id))).join('');
+  document.getElementById('cats').onclick = e => {
+    const b = e.target.closest('.chip'); if (!b) return;
+    cat = b.dataset.c; render();
+  };
+}
+
+function render() {
+  if (mode !== 'find') renderCats();
+  if (mode === 'all') renderAll();
+  else if (mode === 'compare') renderCompare();
+  else renderFind();
+}
+
+let openTag = null;
+function renderAll() {
+  const A = DATA.agg.ALL;
+  let list = A.hashtags.slice();
+  if (cat !== 'all') list = list.filter(h => String(h.categoryId) === String(cat));
+  list.sort((a,b) => metricVal(b) - metricVal(a));
+  const max = Math.max(1, ...list.map(metricVal));
+
+  renderSummary(A);
+  document.getElementById('secsub').textContent =
+    (cat==='all' ? '전체 카테고리' : catName(cat)) + ` · 총 ${list.length}종`;
+
+  document.getElementById('bars').innerHTML = list.map((h, i) => {
+    const val = metricVal(h), col = catColor(h.categoryId), w = (val/max*100).toFixed(1);
+    return `<div class="bar ${openTag===h.tag?'open':''}" data-tag="${esc(h.tag)}">
+      <div class="top">
+        <span class="rk">${i+1}</span>
+        <span class="tag">${h.tag}</span>
+        <span class="cat" style="background:${col}">${catName(h.categoryId)}</span>
+        <span class="num">${val}<small>${metric==='score'?'점':'개'}</small></span>
+        <span class="chev">›</span>
+      </div>
+      <div class="track"><div class="fill" style="width:${w}%;background:${col}"></div></div>
+      <div class="sub2">인기 ${h.count}개 · 최고 ${h.bestRank}위 · <span class="peek">${openTag===h.tag?'▾ 이모티콘 접기':'👆 눌러서 이모티콘 '+h.count+'개 보기'}</span></div>
+      ${openTag===h.tag ? drillHTML(itemsForTag('ALL', h.tag)) : ''}
+    </div>`;
+  }).join('') || '<div class="empty-msg">해당 카테고리 태그가 없어요.</div>';
+
+  document.getElementById('bars').onclick = e => {
+    if (e.target.closest('.emcard')) return;
+    const b = e.target.closest('.bar'); if (!b) return;
+    openTag = (openTag === b.dataset.tag) ? null : b.dataset.tag;
+    renderAll();
+  };
+}
+
+function renderSummary(A) {
+  const cats = A.byCategory.slice(0, 5);
+  const max = Math.max(1, ...A.byCategory.map(c => c.score));
+  const topTag = A.hashtags.slice().sort((a,b)=>metricVal(b)-metricVal(a))[0];
+  const topCat = A.byCategory[0];
+  document.getElementById('summary').innerHTML =
+    `<p class="lead"><b>전체</b> 인기 순위에서 가장 강한 스타일은 <b style="color:${catColor(topTag.categoryId)}">${topTag.tag}</b>,
+     계열로는 <b>${catName(topCat.categoryId)}</b>가 가장 많이 등장해요.</p>
+     <div class="catbars">` +
+    cats.map(c => `<div class="catrow">
+        <span class="nm">${catName(c.categoryId)}</span>
+        <span class="track"><span class="fill" style="width:${(c.score/max*100).toFixed(1)}%;background:${catColor(c.categoryId)}"></span></span>
+        <span class="val">${c.score}</span>
+      </div>`).join('') + `</div>`;
+}
+
+function itemsForTag(bandKey, tag) {
+  const out = [];
+  DATA.rankings[bandKey].forEach((slug, idx) => {
+    const it = DATA.items[slug];
+    if (it && it.tags.some(t => t.tag === tag)) out.push({ slug, ...it, rank: idx+1 });
+  });
+  return out;
+}
+function drillHTML(items) {
+  return `<div class="drill">` + items.map(it => emCardHTML(it, [])).join('') + `</div>`;
+}
+
+function emCardHTML(it, matchTags) {
+  const tgs = (it.tags||[]).map(t =>
+    `<span class="tg ${matchTags.includes(t.tag)?'match':''}" style="background:${catColor(t.categoryId)}">${t.tag}</span>`).join('');
+  return `<a class="emcard" href="${itemUrl(it.slug)}" target="_blank" rel="noopener">
+    <div class="thumb"><img loading="lazy" src="${it.image}" alt="" /><span class="rank">${it.rank}위</span><span class="ext">↗</span></div>
+    <div class="info"><div class="title">${esc(it.title)}</div><div class="creator">${esc(it.creator||'')}</div>
+      <div class="tgs">${tgs}</div></div>
+  </a>`;
+}
+
+function renderCompare() {
+  document.getElementById('agepick').innerHTML = DATA.ageBands.map(b =>
+    `<button class="ab ${compareBands.includes(b.key)?'on':''}" data-k="${b.key}">${b.label}</button>`).join('');
+  document.getElementById('agepick').onclick = e => {
+    const b = e.target.closest('.ab'); if (!b) return;
+    const k = b.dataset.k;
+    if (compareBands.includes(k)) { if (compareBands.length > 1) compareBands = compareBands.filter(x => x !== k); }
+    else compareBands = DATA.ageBands.map(x=>x.key).filter(x => compareBands.includes(x) || x === k);
+    renderCats(); renderCompare();
+  };
+
+  const bands = compareBands;
+  const rankMaps = {}; let globalMaxVal = 1;
+  bands.forEach(bk => {
+    const sorted = DATA.agg[bk].hashtags.slice().sort((a,b)=>metricVal(b)-metricVal(a));
+    const m = {};
+    sorted.forEach((h, i) => { m[h.tag] = { rank: i+1, val: metricVal(h), categoryId: h.categoryId }; globalMaxVal = Math.max(globalMaxVal, metricVal(h)); });
+    rankMaps[bk] = m;
+  });
+
+  const tagInfo = new Map();
+  bands.forEach(bk => Object.entries(rankMaps[bk]).forEach(([tag, v]) => {
+    if (cat !== 'all' && String(v.categoryId) !== String(cat)) return;
+    const cur = tagInfo.get(tag) || { categoryId: v.categoryId, sumVal: 0 };
+    cur.sumVal += v.val; tagInfo.set(tag, cur);
+  }));
+  const rows = [...tagInfo.entries()].sort((a,b)=>b[1].sumVal - a[1].sumVal);
+
+  const head = `<thead><tr><th class="tagcol">해시태그</th>` +
+    bands.map(bk => `<th>${DATA.ageBands.find(b=>b.key===bk).label}</th>`).join('') + `</tr></thead>`;
+  const body = `<tbody>` + rows.map(([tag, info]) => {
+    const col = catColor(info.categoryId);
+    const cells = bands.map(bk => {
+      const v = rankMaps[bk][tag];
+      if (!v) return `<td><span class="cell empty">–</span></td>`;
+      const intensity = 0.15 + 0.85 * (v.val / globalMaxVal);
+      return `<td><span class="cell" style="background:${hexA(col, intensity)};color:${intensity>0.55?'#fff':'var(--ink)'}">${v.rank}위<small>${v.val}${metric==='score'?'점':'개'}</small></span></td>`;
+    }).join('');
+    return `<tr><td class="tagcol"><div class="tagcell"><span class="sw" style="background:${col}"></span><span class="nm">${tag}</span></div></td>${cells}</tr>`;
+  }).join('') + `</tbody>`;
+
+  document.getElementById('matrix').innerHTML = head + (rows.length ? body :
+    `<tbody><tr><td colspan="${bands.length+1}" style="padding:40px;color:var(--sub)">해당 카테고리 태그가 없어요.</td></tr></tbody>`);
+}
+
+function renderFind() {
+  document.getElementById('findage').innerHTML = DATA.ageBands.map(b =>
+    `<button class="ab ${findBand===b.key?'on':''}" data-k="${b.key}">${b.label}</button>`).join('');
+  document.getElementById('findage').onclick = e => {
+    const b = e.target.closest('.ab'); if (!b) return;
+    findBand = b.dataset.k; renderFind();
+  };
+
+  const pool = DATA.rankings[findBand].map((slug, idx) => ({ slug, ...DATA.items[slug], rank: idx+1 }));
+
+  const tagCount = new Map(), tagCat = {};
+  pool.forEach(it => (it.tags||[]).forEach(t => { tagCount.set(t.tag, (tagCount.get(t.tag)||0)+1); tagCat[t.tag] = t.categoryId; }));
+  const byCat = {};
+  [...tagCount.keys()].forEach(tag => { const c = tagCat[tag]; (byCat[c] = byCat[c]||[]).push(tag); });
+  const catOrder = Object.keys(byCat).sort((a,b)=>{
+    const sa = byCat[a].reduce((s,t)=>s+tagCount.get(t),0), sb = byCat[b].reduce((s,t)=>s+tagCount.get(t),0);
+    return sb - sa;
+  });
+
+  document.getElementById('tagselect').innerHTML = catOrder.map(c => {
+    const col = catColor(c);
+    const tags = byCat[c].sort((a,b)=>tagCount.get(b)-tagCount.get(a));
+    return `<div class="tgroup">
+      <div class="gl"><span class="sw" style="background:${col}"></span>${catName(c)}</div>
+      <div class="tgwrap">` + tags.map(tag => {
+        const on = selectedTags.has(tag);
+        return `<button class="tgpick ${on?'on':''}" data-tag="${esc(tag)}" style="${on?`background:${col};`:''}">${tag}<span class="n">${tagCount.get(tag)}</span></button>`;
+      }).join('') + `</div></div>`;
+  }).join('');
+
+  document.getElementById('tagselect').onclick = e => {
+    const b = e.target.closest('.tgpick'); if (!b) return;
+    const t = b.dataset.tag;
+    if (selectedTags.has(t)) selectedTags.delete(t); else selectedTags.add(t);
+    renderFind();
+  };
+
+  const sel = [...selectedTags];
+  const matched = pool.filter(it => sel.every(t => (it.tags||[]).some(x => x.tag === t)));
+  const selLabel = sel.length ? sel.join(' + ') : '전체';
+  document.getElementById('findhead').innerHTML =
+    `<span class="cnt">${matched.length}개</span><span>이모티콘</span><span class="sel">· ${sel.length? '태그 '+sel.length+'개 모두 포함: '+esc(selLabel) : DATA.ageBands.find(b=>b.key===findBand).label+' 순위 전체'}</span>`;
+
+  document.getElementById('emgrid').innerHTML = matched.length
+    ? matched.map(it => emCardHTML(it, sel)).join('')
+    : `<div class="empty-msg" style="grid-column:1/-1">선택한 태그를 모두 가진 이모티콘이 이 순위권엔 없어요. 태그를 줄여보세요.</div>`;
+}
+
+function hexA(hex, a) {
+  const h = hex.replace('#',''); const n = parseInt(h.length===3 ? h.split('').map(c=>c+c).join('') : h, 16);
+  return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a.toFixed(2)})`;
+}
+function esc(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+</script>
+</body>
+</html>
