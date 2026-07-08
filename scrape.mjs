@@ -85,6 +85,19 @@ async function fetchHashtags(slug) {
   return out;
 }
 
+// MD추천 = 카카오 MD가 직접 추천한 큐레이션(스타일 그룹 11). 해시태그가 아니라 별도 추천 목록.
+// slug 집합만 모아서, 순위에 든 이모티콘이 MD추천인지 표시하는 데 사용.
+async function fetchMdPickSlugs() {
+  const set = new Set();
+  for (let page = 0; page < 12; page++) {
+    const j = await getJSON(`${BASE}/api/styles/11?page=${page}&size=100&sort=NEW`);
+    (j?.items || []).forEach((it) => it.slug && set.add(it.slug));
+    if (!j?.hasNext) break;
+    await sleep(150);
+  }
+  return set;
+}
+
 async function main() {
   const cacheDir = new URL('./cache/', import.meta.url);
   const cachePath = new URL('./cache/hashtags.json', import.meta.url);
@@ -105,6 +118,10 @@ async function main() {
     console.log(`[rank] ${band.label}: ${list.length}개`);
     await sleep(300);
   }
+
+  // 1-b) MD추천 목록 수집 (순위 이모티콘에 MD추천 배지 표시용)
+  const mdSet = await fetchMdPickSlugs();
+  console.log(`[md] MD추천 총 ${mdSet.size}개 수집`);
 
   // 2) 등장한 모든 이모티콘 해시태그 수집(캐시 활용)
   const allSlugs = [...new Set(Object.values(rankings).flat().map((i) => i.slug))];
@@ -161,7 +178,8 @@ async function main() {
     size: SIZE,
     ageBands: AGE_BANDS.map(({ key, label }) => ({ key, label })),
     categories: CATEGORY_LABELS,
-    items: Object.fromEntries(allSlugs.map((s) => [s, { ...itemMeta[s], tags: tagsBySlug[s] || [] }])),
+    items: Object.fromEntries(allSlugs.map((s) => [s, { ...itemMeta[s], md: mdSet.has(s), tags: tagsBySlug[s] || [] }])),
+    mdCount: allSlugs.filter((s) => mdSet.has(s)).length,
     rankings: compactRankings,
     agg,
   };

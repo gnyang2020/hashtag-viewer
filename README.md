@@ -5,7 +5,7 @@
 ## 어떻게 동작하나
 
 ```
-GitHub Actions (매일 오전 10시)
+GitHub Actions (매주 수요일 오전 10시)
    └─ node scrape.mjs
         ├─ 카카오 인기 순위 API 6개(전체/10~50대+) × 50위 수집
         ├─ 각 이모티콘 상세 API에서 해시태그 수집 (cache/hashtags.json 캐시)
@@ -35,7 +35,7 @@ cd public && python3 -m http.server 8877
 1. GitHub 리포 생성 후 push
 2. Vercel에서 이 리포를 Import → `vercel.json` 설정(정적, `public/`)대로 배포
 3. GitHub 저장소 Settings → Actions → 워크플로 권한을 "Read and write"로 (자동 커밋용)
-4. 이후 매일 오전 10시 자동 갱신
+4. 이후 매주 수요일 오전 10시 자동 갱신
 
 ## 데이터 구조 (public/data.json)
 

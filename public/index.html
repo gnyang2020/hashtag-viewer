@@ -156,6 +156,12 @@
   .bar .fill { height:100%; border-radius:6px; transition:width .4s cubic-bezier(.2,.7,.3,1); }
   .bar .sub2 { font-size:11.5px; color:var(--sub); margin-top:6px; }
 
+  /* 전체 순위 서브탭 (해시태그 랭킹 / 순위별 보기) */
+  .subtabs { display:inline-flex; gap:4px; background:var(--card); border-radius:999px; padding:4px; box-shadow:var(--shadow); margin:22px 0 10px; }
+  .subtabs button { border:0; background:none; font-size:13px; font-weight:800; color:var(--sub); padding:8px 15px; border-radius:999px; cursor:pointer; font-family:inherit; white-space:nowrap; }
+  .subtabs button.on { background:var(--lime); color:#173d05; }
+  .secsub2 { font-size:12px; color:var(--sub); font-weight:600; margin:0 2px 12px; }
+
   .emgrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(158px,1fr)); gap:10px; margin-top:12px; }
   .drill { margin-top:10px; padding-top:10px; border-top:1px dashed var(--line); display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:8px; }
   .emcard { background:var(--card); border-radius:12px; box-shadow:var(--shadow); overflow:hidden; display:flex; flex-direction:column; transition:.12s; border:1.5px solid transparent; }
@@ -170,6 +176,15 @@
   .emcard .tgs { display:flex; flex-wrap:wrap; gap:3px; }
   .emcard .tg { font-size:9.5px; font-weight:700; color:#fff; border-radius:5px; padding:1px 5px; }
   .emcard .tg.match { outline:2px solid var(--ink); }
+  /* MD추천 강조 */
+  .emcard.md { border-color:#FFC53D; box-shadow:0 0 0 1px #FFC53D, var(--shadow); }
+  .emcard .mdtag { position:absolute; bottom:7px; left:7px; font-size:10px; font-weight:800; color:#3d2600;
+    background:#FFC53D; border-radius:6px; padding:2px 7px; box-shadow:0 1px 3px rgba(0,0,0,.2); }
+  .mdfilter { margin-top:12px; }
+  .mdchip { border:1.5px solid #FFC53D; background:#FFF8E6; color:#8a5a00; font-size:13px; font-weight:800;
+    padding:9px 15px; border-radius:999px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; font-family:inherit; }
+  .mdchip.on { background:#FFC53D; color:#3d2600; border-color:#e5a800; }
+  .mdchip .c { font-weight:700; opacity:.8; }
 
   .agepick { display:flex; flex-wrap:wrap; gap:6px; margin-top:14px; }
   .agepick .ab { border:1.5px solid var(--line); background:var(--card); color:var(--sub); font-weight:700;
@@ -219,13 +234,13 @@
   <header>
     <h1>[쥐냥] 해시태그 뷰어</h1>
     <div class="sub">카카오 이모티콘 인기 순위를 해시태그(스타일)별로 분석하는 뷰어 · hashtag viewer</div>
-    <span class="badge" id="badge">매일 자동 갱신</span>
+    <span class="badge" id="badge">주간 자동 갱신</span>
   </header>
 
   <!-- 안내 바 → 가이드 팝업 -->
   <div class="notice-bar" id="noticeBar">
     <span class="ic">📖</span>
-    <span class="tx"><b>사용법 · 안내</b> — 매일 오전 10시 갱신 · 카카오 사정에 따라 서비스가 종료될 수 있어요</span>
+    <span class="tx"><b>사용법 · 안내</b> — 매주 수요일 갱신 · 카카오 사정에 따라 서비스가 종료될 수 있어요</span>
     <span class="go">보기 ›</span>
   </div>
 
@@ -246,8 +261,13 @@
 
   <section id="view-all">
     <div class="summary" id="summary"></div>
-    <h2 class="sec">해시태그 랭킹 <small id="secsub"></small></h2>
+    <div class="subtabs" id="allsub">
+      <button data-s="tags" class="on">해시태그 랭킹</button>
+      <button data-s="ranks">순위별 보기</button>
+    </div>
+    <div class="secsub2" id="secsub"></div>
     <div class="bars" id="bars"><div class="loading">데이터를 불러오는 중…</div></div>
+    <div class="emgrid hide" id="ranklist"></div>
   </section>
 
   <section id="view-compare" class="hide">
@@ -258,6 +278,7 @@
 
   <section id="view-find" class="hide">
     <div class="agepick" id="findage"></div>
+    <div class="mdfilter" id="mdfilter"></div>
     <div class="tagbox">
       <div class="hd"><b>태그 선택 <span style="color:var(--sub);font-weight:600">— 여러 개 고르면 모두 포함한 이모티콘만</span></b>
         <button class="reset" id="tagreset">선택 초기화</button></div>
@@ -294,6 +315,10 @@
       같은 해시태그가 <b>연령대별로 몇 위인지</b> 표로 나란히 비교해요. 위의 연령 버튼으로 원하는 연령대만 켜고 끌 수 있고, 칸 색이 <b>진할수록 상위</b>입니다.
       <h3>🔎 태그로 찾기</h3>
       태그를 <b>여러 개 체크하면 그 태그를 모두 가진 이모티콘</b>만 걸러줘요. (예: <b>#댕댕이 + #하찮아서_귀여워</b>) 이모티콘을 누르면 카카오 상세 페이지로 이동합니다.
+      <div class="pbox" style="background:#FFF8E6;border:1.5px dashed #FFC53D;">
+        <div class="t">⭐ MD추천이란?</div>
+        카카오 MD(상품기획자)가 직접 밀어주는 이모티콘이에요. 인기·노출에 크게 영향을 줘서 <b>중요한 신호</b>랍니다. MD추천 이모티콘엔 <b>⭐ 금색 배지</b>가 붙고, ‘MD추천만 보기’로 골라볼 수 있어요.
+      </div>
       <div class="pbox lime">
         <div class="t">📏 두 가지 점수 뜻</div>
         <b>순위가중점수</b> — 1위일수록 큰 점수(1위=최고점)를 그 태그의 이모티콘들에서 합산. “<b>얼마나 상위권에 포진했나</b>”.<br>
@@ -303,7 +328,7 @@
     <div class="pscroll hide" id="popInfo">
       <div class="pbox lime">
         <div class="t">⏰ 언제 갱신되나요?</div>
-        <b>매일 오전 10시(한국시간)</b>에 자동으로 최신 인기 순위를 가져와 갱신해요. 그래서 지금 보이는 데이터는 <b>최대 하루 전</b> 기준입니다. (실시간 아님)
+        <b>매주 수요일 오전 10시(한국시간)</b>에 자동으로 최신 인기 순위를 가져와 갱신해요. 그래서 지금 보이는 데이터는 <b>그 주의 인기 순위</b> 기준입니다. (실시간 아님)
       </div>
       <div class="pbox warn">
         <div class="t">⚠️ 서비스가 종료될 수 있어요</div>
@@ -322,9 +347,9 @@ const css = getComputedStyle(document.documentElement);
 const catColor = (id) => css.getPropertyValue(CAT_VAR[id] || '--c0').trim() || '#9aa2ac';
 const itemUrl = (slug) => 'https://e.kakao.com/t/' + encodeURIComponent(slug);
 
-let DATA, mode = 'all', cat = 'all', metric = 'score';
+let DATA, mode = 'all', cat = 'all', metric = 'score', allSub = 'tags';
 let compareBands = null;
-let findBand = 'ALL', selectedTags = new Set();
+let findBand = 'ALL', selectedTags = new Set(), mdOnly = false;
 
 fetch('data.json?_=' + Date.now()).then(r => r.json()).then(d => { DATA = d; init(); })
   .catch(() => { document.getElementById('bars').innerHTML = '<div class="loading">데이터를 불러오지 못했어요. 잠시 후 새로고침해 주세요.</div>'; });
@@ -371,6 +396,10 @@ function init() {
     render();
   };
   document.getElementById('tagreset').onclick = () => { selectedTags.clear(); renderFind(); };
+  document.getElementById('allsub').onclick = e => {
+    const b = e.target.closest('button'); if (!b) return;
+    allSub = b.dataset.s; renderAll();
+  };
   render();
 }
 
@@ -403,12 +432,19 @@ function render() {
 let openTag = null;
 function renderAll() {
   const A = DATA.agg.ALL;
+  renderSummary(A);
+  document.querySelectorAll('#allsub button').forEach(b => b.classList.toggle('on', b.dataset.s === allSub));
+  // 순위별 보기에선 점수/횟수 토글이 의미 없어 숨김
+  document.getElementById('metric').style.display = allSub === 'ranks' ? 'none' : '';
+  const barsEl = document.getElementById('bars'), rankEl = document.getElementById('ranklist');
+  if (allSub === 'ranks') { barsEl.classList.add('hide'); rankEl.classList.remove('hide'); renderRankGrid(); return; }
+  barsEl.classList.remove('hide'); rankEl.classList.add('hide');
+
   let list = A.hashtags.slice();
   if (cat !== 'all') list = list.filter(h => String(h.categoryId) === String(cat));
   list.sort((a,b) => metricVal(b) - metricVal(a));
   const max = Math.max(1, ...list.map(metricVal));
 
-  renderSummary(A);
   document.getElementById('secsub').textContent =
     (cat==='all' ? '전체 카테고리' : catName(cat)) + ` · 총 ${list.length}종`;
 
@@ -434,6 +470,17 @@ function renderAll() {
     openTag = (openTag === b.dataset.tag) ? null : b.dataset.tag;
     renderAll();
   };
+}
+
+// 순위별 보기 — 전체 인기 순위를 1위부터 카드로 (태그로 찾기와 동일 카드 재사용)
+function renderRankGrid() {
+  let pool = DATA.rankings.ALL.map((slug, idx) => ({ slug, ...DATA.items[slug], rank: idx+1 }));
+  if (cat !== 'all') pool = pool.filter(it => (it.tags||[]).some(t => String(t.categoryId) === String(cat)));
+  document.getElementById('secsub').textContent =
+    (cat==='all' ? '전체 순위' : catName(cat)+' 스타일') + ` · ${pool.length}개 · 1위부터 순서대로`;
+  document.getElementById('ranklist').innerHTML = pool.length
+    ? pool.map(it => emCardHTML(it, cat==='all' ? [] : (it.tags||[]).filter(t=>String(t.categoryId)===String(cat)).map(t=>t.tag))).join('')
+    : '<div class="empty-msg" style="grid-column:1/-1">해당 카테고리 이모티콘이 없어요.</div>';
 }
 
 function renderSummary(A) {
@@ -467,8 +514,9 @@ function drillHTML(items) {
 function emCardHTML(it, matchTags) {
   const tgs = (it.tags||[]).map(t =>
     `<span class="tg ${matchTags.includes(t.tag)?'match':''}" style="background:${catColor(t.categoryId)}">${t.tag}</span>`).join('');
-  return `<a class="emcard" href="${itemUrl(it.slug)}" target="_blank" rel="noopener">
-    <div class="thumb"><img loading="lazy" src="${it.image}" alt="" /><span class="rank">${it.rank}위</span><span class="ext">↗</span></div>
+  const mdBadge = it.md ? `<span class="mdtag">⭐ MD추천</span>` : '';
+  return `<a class="emcard${it.md?' md':''}" href="${itemUrl(it.slug)}" target="_blank" rel="noopener">
+    <div class="thumb"><img loading="lazy" src="${it.image}" alt="" /><span class="rank">${it.rank}위</span><span class="ext">↗</span>${mdBadge}</div>
     <div class="info"><div class="title">${esc(it.title)}</div><div class="creator">${esc(it.creator||'')}</div>
       <div class="tgs">${tgs}</div></div>
   </a>`;
@@ -529,6 +577,12 @@ function renderFind() {
 
   const pool = DATA.rankings[findBand].map((slug, idx) => ({ slug, ...DATA.items[slug], rank: idx+1 }));
 
+  // MD추천 필터 토글
+  const mdInPool = pool.filter(it => it.md).length;
+  document.getElementById('mdfilter').innerHTML =
+    `<button class="mdchip ${mdOnly?'on':''}">⭐ MD추천만 보기 <span class="c">${mdInPool}개</span></button>`;
+  document.getElementById('mdfilter').onclick = () => { mdOnly = !mdOnly; renderFind(); };
+
   const tagCount = new Map(), tagCat = {};
   pool.forEach(it => (it.tags||[]).forEach(t => { tagCount.set(t.tag, (tagCount.get(t.tag)||0)+1); tagCat[t.tag] = t.categoryId; }));
   const byCat = {};
@@ -557,10 +611,15 @@ function renderFind() {
   };
 
   const sel = [...selectedTags];
-  const matched = pool.filter(it => sel.every(t => (it.tags||[]).some(x => x.tag === t)));
+  const matched = pool.filter(it =>
+    (!mdOnly || it.md) && sel.every(t => (it.tags||[]).some(x => x.tag === t)));
   const selLabel = sel.length ? sel.join(' + ') : '전체';
+  const parts = [];
+  if (mdOnly) parts.push('⭐ MD추천');
+  if (sel.length) parts.push('태그 ' + sel.length + '개 모두 포함: ' + esc(selLabel));
+  const desc = parts.length ? parts.join(' · ') : DATA.ageBands.find(b=>b.key===findBand).label + ' 순위 전체';
   document.getElementById('findhead').innerHTML =
-    `<span class="cnt">${matched.length}개</span><span>이모티콘</span><span class="sel">· ${sel.length? '태그 '+sel.length+'개 모두 포함: '+esc(selLabel) : DATA.ageBands.find(b=>b.key===findBand).label+' 순위 전체'}</span>`;
+    `<span class="cnt">${matched.length}개</span><span>이모티콘</span><span class="sel">· ${desc}</span>`;
 
   document.getElementById('emgrid').innerHTML = matched.length
     ? matched.map(it => emCardHTML(it, sel)).join('')

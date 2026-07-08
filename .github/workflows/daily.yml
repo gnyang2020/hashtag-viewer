@@ -1,8 +1,8 @@
-name: 매일 카카오 해시태그 데이터 갱신
+name: 주간 카카오 해시태그 데이터 갱신
 
 on:
   schedule:
-    - cron: '0 1 * * *'   # UTC 01:00 = KST 10:00 (매일 오전 10시)
+    - cron: '0 1 * * 3'   # UTC 수 01:00 = KST 수 10:00 (매주 수요일 오전 10시)
   workflow_dispatch:         # 수동 실행 버튼도 허용
 
 permissions:
