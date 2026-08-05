@@ -113,6 +113,75 @@
     padding:11px 6px; border-radius:10px; cursor:pointer; transition:.15s; white-space:nowrap; font-family:inherit; }
   .mode.on { background:var(--lime); color:#173d05; box-shadow:0 1px 2px rgba(0,0,0,.1); }
 
+  /* 그룹(1단) — 모드보다 상위. 진한 배경으로 위계를 준다. */
+  .groups { display:flex; gap:6px; margin:18px 0 0; }
+  .group { flex:1; border:1.5px solid var(--line); background:var(--card); color:var(--sub);
+    font-weight:800; font-size:14px; padding:12px 8px; border-radius:12px; cursor:pointer;
+    transition:.15s; font-family:inherit; box-shadow:var(--shadow); }
+  .group.on { background:var(--ink); border-color:var(--ink); color:#fff; }
+
+  /* ── 인사이트 공용 ── */
+  .ilead { background:var(--lime-soft); border:1.5px solid var(--lime-line); border-radius:12px;
+    padding:12px 14px; font-size:12.5px; color:#42592f; line-height:1.65; margin:14px 0 0; }
+  .ilead b { color:var(--lime-ink); }
+  .ipick { display:flex; gap:6px; flex-wrap:wrap; margin-top:12px; }
+  .ipick button { border:1.5px solid var(--line); background:var(--card); color:var(--sub);
+    font-size:12.5px; font-weight:700; padding:7px 12px; border-radius:999px; cursor:pointer;
+    font-family:inherit; white-space:nowrap; }
+  .ipick button.on { background:var(--lime); border-color:var(--lime-line); color:#20500a; }
+
+  .itblwrap { overflow-x:auto; border:1px solid var(--line); border-radius:14px; background:var(--card);
+    box-shadow:var(--shadow); margin-top:14px; }
+  .itbl { border-collapse:collapse; width:100%; min-width:520px; font-size:13px; }
+  .itbl th, .itbl td { padding:10px 11px; text-align:right; white-space:nowrap; border-bottom:1px solid var(--line); }
+  /* 표 헤더 글자는 --sub(#6b7280)이면 회색 배경 위에서 4.42:1로 WCAG AA(4.5) 미달 → 한 단계 어둡게 */
+  .itbl th { background:#f3f5f7; color:#5b616b; font-size:11.5px; font-weight:700; }
+  .itbl th:first-child, .itbl td:first-child { text-align:left; white-space:normal; min-width:132px; }
+  .itbl tbody tr:last-child td { border-bottom:none; }
+  .itbl td.hi { color:var(--lime-ink); font-weight:800; }
+  .ibar { height:5px; border-radius:3px; background:var(--lime); display:block; min-width:2px; }
+
+  .ilist { display:flex; flex-direction:column; gap:8px; margin-top:10px; }
+  .irow { display:flex; align-items:center; gap:11px; background:var(--card); border:1px solid var(--line);
+    border-radius:12px; padding:10px 12px; box-shadow:var(--shadow); transition:.15s; }
+  a.irow:hover { border-color:var(--lime-line); background:var(--lime-soft); }
+
+  /* 외부 링크 (카카오 이모티콘샵으로 이동) */
+  .ilink { font-weight:800; color:var(--ink); text-decoration:none; }
+  .ilink:hover { color:var(--lime-ink); text-decoration:underline; }
+  .isub { display:block; font-size:11px; color:var(--sub); margin-top:3px; text-decoration:none;
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .isub:hover { color:var(--lime-ink); text-decoration:underline; }
+  .iext { font-size:10px; color:var(--sub); vertical-align:1px; }
+  .iband { display:inline-block; margin-left:5px; padding:1px 6px; border-radius:5px;
+    background:#eef0f3; color:#5b616b; font-size:10px; font-weight:700; vertical-align:1px; }
+
+  /* 제작 아이디어의 태그 → 태그로 찾기로 이동하는 버튼 */
+  .itag { border:none; background:none; padding:0; font-family:inherit; font-size:13px;
+    font-weight:700; color:var(--ink); cursor:pointer; text-align:left; }
+  .itag:hover { color:var(--lime-ink); text-decoration:underline; }
+
+  /* 태그를 눌렀을 때 그 자리에서 펼쳐지는 결과 패널 */
+  #ideaDrill { margin-top:18px; padding-top:16px; border-top:2px solid var(--lime-line); }
+  .drillhead { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px; }
+  .drillhead b { font-size:15px; color:var(--lime-ink); }
+  .dsub { font-size:12px; color:var(--sub); font-weight:600; }
+  .dclose { border:1.5px solid var(--line); background:var(--card); color:var(--sub); font-family:inherit;
+    font-size:12px; font-weight:700; padding:6px 11px; border-radius:999px; cursor:pointer; white-space:nowrap; }
+  .dclose:hover { border-color:var(--sub); color:var(--ink); }
+  .irank { flex:0 0 auto; min-width:34px; text-align:center; font-weight:800; font-size:15px; color:var(--lime-ink); }
+  .ithumb { flex:0 0 auto; width:42px; height:42px; border-radius:9px; background:#f0f2f5; object-fit:cover; }
+  .iinfo { flex:1; min-width:0; }
+  .ittl { font-size:13.5px; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .imeta { font-size:11.5px; color:var(--sub); margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .idelta { flex:0 0 auto; font-size:12.5px; font-weight:800; text-align:right; min-width:54px; }
+  /* #16a34a는 흰 배경에서 3.30:1로 AA 미달 → 한 단계 어둡게(#15803d, 4.54:1) */
+  .iup { color:#15803d; } .idown { color:#dc2626; } .inew { color:#2563eb; }
+  .ih3 { font-size:14.5px; font-weight:800; margin:22px 0 4px; }
+  .ihint { font-size:11.5px; color:var(--sub); line-height:1.55; margin:4px 0 0; }
+  .iempty { color:var(--sub); font-size:13px; padding:24px; text-align:center; background:var(--card);
+    border:1px solid var(--line); border-radius:14px; margin-top:10px; }
+
   .controls { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:16px; flex-wrap:wrap; }
   .cats { display:flex; gap:6px; overflow-x:auto; flex:1; scrollbar-width:none; padding-bottom:2px; min-width:0; }
   .cats::-webkit-scrollbar { display:none; }
@@ -244,11 +313,23 @@
     <span class="go">보기 ›</span>
   </div>
 
-  <!-- 모드 -->
+  <!-- 그룹 (1단): 무엇을 하러 왔는지 -->
+  <div class="groups" id="groups">
+    <button class="group on" data-group="popular">🔥 인기 분석</button>
+    <button class="group" data-group="insight">📈 인사이트</button>
+  </div>
+
+  <!-- 모드 (2단): 선택한 그룹의 뷰 -->
   <div class="modes" id="modes">
     <button class="mode on" data-mode="all">전체 순위</button>
     <button class="mode" data-mode="compare">연령별 비교</button>
     <button class="mode" data-mode="find">태그로 찾기</button>
+  </div>
+
+  <div class="modes hide" id="modes2">
+    <button class="mode on" data-mode2="creator">작가 파워</button>
+    <button class="mode" data-mode2="movement">순위 변동</button>
+    <button class="mode" data-mode2="idea">제작 아이디어</button>
   </div>
 
   <div class="controls" id="controls">
@@ -286,6 +367,46 @@
     </div>
     <div class="findhead" id="findhead"></div>
     <div class="emgrid" id="emgrid"></div>
+  </section>
+
+  <!-- ── 인사이트 그룹 ── -->
+  <section id="view-creator" class="hide">
+    <p class="ilead">순위권 작가를 <b>관심수(팔로워)</b>·<b>총 출시 수</b>·<b>200위 진입 수</b>로 비교합니다.
+      <b>히트율</b>은 낸 것 중 몇 %가 순위에 들었는지, <b>가성비</b>는 관심수 1만 명당 몇 개를 순위에 올렸는지예요.
+      가성비가 높을수록 <b>팔로워가 적은데도 성과를 내는</b> 작가입니다.</p>
+    <div class="ipick" id="creatorSort">
+      <button class="on" data-sort="interest">관심수</button>
+      <button data-sort="hits">순위 진입 수</button>
+      <button data-sort="hitrate">히트율</button>
+      <button data-sort="efficiency">가성비</button>
+    </div>
+    <div class="ipick" id="creatorFilter">
+      <button data-cf="small">관심수 5만 미만</button>
+      <button data-cf="few">출시 10개 이하</button>
+    </div>
+    <p class="ihint" id="creatorGuide"></p>
+    <div class="itblwrap"><table class="itbl" id="creatorTbl"></table></div>
+  </section>
+
+  <section id="view-movement" class="hide">
+    <p class="ilead">주마다 순위가 어떻게 움직였는지 봅니다. 숫자는 <b>앞 시점 대비</b> 상승/하락 폭이에요.</p>
+    <div class="ipick" id="mvBand"></div>
+    <div class="ipick" id="mvDate"></div>
+    <div id="mvBody"></div>
+  </section>
+
+  <section id="view-idea" class="hide">
+    <p class="ilead"><b>수요</b>(인기 200위에서 그 태그가 차지하는 비율)와 <b>공급</b>(최근 신상에서의 비율)을 비교합니다.
+      <b>배율이 높을수록</b> 적게 나왔는데 잘 되는 소재 = 노려볼 만한 빈틈이에요.</p>
+    <div class="ipick" id="ideaBand"></div>
+    <div class="ipick" id="ideaView">
+      <button class="on" data-idea="gap">빈틈</button>
+      <button data-idea="over">과잉</button>
+      <button data-idea="token">제목 키워드</button>
+      <button data-idea="ageskew">연령대 편중</button>
+    </div>
+    <div id="ideaBody"></div>
+    <div id="ideaDrill" class="hide"></div>
   </section>
 
   <footer>
@@ -335,8 +456,16 @@
         이 사이트는 <b>카카오 공식 서비스가 아니에요.</b> 카카오 이모티콘샵에 공개된 인기 순위를 <b>자동으로 가져와서</b> 보기 좋게 정리해 보여주는 도구랍니다.<br><br>
         그래서 <b>카카오 사정에 따라</b>(사이트 구조 변경·데이터 접근 차단 등) 예고 없이 <b>서비스가 종료될 수 있어요.</b> 그 점만 미리 알아두세요.
       </div>
+      <div class="pbox">
+        <div class="t">📈 인사이트는 뭐예요?</div>
+        위쪽 <b>인사이트</b> 버튼을 누르면 3가지를 더 볼 수 있어요.<br><br>
+        · <b>작가 파워</b> — 어떤 작가가 팔로워 대비 효율적으로 순위에 드는지<br>
+        · <b>순위 변동</b> — 주마다 뭐가 뜨고 지는지, 오래 버티는 이모티콘은 뭔지<br>
+        · <b>제작 아이디어</b> — 인기는 많은데 <b>덜 나온 소재</b>(빈틈)가 뭔지
+      </div>
       <h3>📮 데이터 출처</h3>
-      카카오 이모티콘샵 인기 순위(전체 + 10·20·30·40·50대 이상) 상위 <b id="infoSize">200</b>위와, 각 이모티콘의 스타일 해시태그.
+      카카오 이모티콘샵 인기 순위(전체 + 10·20·30·40·50대 이상) 상위 <b id="infoSize">200</b>위와 각 이모티콘의 스타일 해시태그,
+      그리고 카테고리별 <b>최근 신상 100개씩</b>(제작 아이디어의 '공급' 비교용).
     </div>
   </div>
 </div>
@@ -346,6 +475,8 @@ const CAT_VAR = {1:'--c1',2:'--c2',4:'--c4',5:'--c5',10:'--c10',11:'--c11',12:'-
 const css = getComputedStyle(document.documentElement);
 const catColor = (id) => css.getPropertyValue(CAT_VAR[id] || '--c0').trim() || '#9aa2ac';
 const itemUrl = (slug) => 'https://e.kakao.com/t/' + encodeURIComponent(slug);
+// 작가 페이지는 /creator/{creatorId} (복수형 /creators/·/brand/ 등은 빈 페이지가 뜬다)
+const creatorUrl = (id) => 'https://e.kakao.com/creator/' + encodeURIComponent(id);
 
 let DATA, mode = 'all', cat = 'all', metric = 'score', allSub = 'tags';
 let compareBands = null;
@@ -382,13 +513,378 @@ function init() {
   document.getElementById('modes').onclick = e => {
     const b = e.target.closest('.mode'); if (!b) return;
     mode = b.dataset.mode;
-    document.querySelectorAll('.mode').forEach(x => x.classList.toggle('on', x === b));
+    // '#modes 안의' 버튼만 — 인사이트 그룹(#modes2)의 버튼까지 건드리지 않도록 스코프를 좁힌다.
+    document.querySelectorAll('#modes .mode').forEach(x => x.classList.toggle('on', x === b));
     document.getElementById('view-all').classList.toggle('hide', mode !== 'all');
     document.getElementById('view-compare').classList.toggle('hide', mode !== 'compare');
     document.getElementById('view-find').classList.toggle('hide', mode !== 'find');
     document.getElementById('controls').classList.toggle('hide', mode === 'find');
     render();
   };
+
+  /* ═══════════ 인사이트 그룹 ═══════════
+     insight.json / history.json은 이 그룹을 처음 열 때만 받는다.
+     인기 분석만 보는 사람은 추가 다운로드가 없다. */
+  const IN = { data:null, hist:null, loading:false,
+               sort:'interest', cfilter:new Set(), band:'ALL', dateIdx:null,
+               ideaBand:'ALL', ideaView:'gap', showBrand:false, mode:'creator' };
+
+  const inum = n => (n ?? 0).toLocaleString('ko-KR');
+  const ipct = n => (n * 100).toFixed(1) + '%';
+  const iesc = s => (s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const $id = id => document.getElementById(id);
+
+  document.getElementById('groups').onclick = async e => {
+    const b = e.target.closest('.group'); if (!b) return;
+    const g = b.dataset.group;
+    document.querySelectorAll('.group').forEach(x => x.classList.toggle('on', x === b));
+
+    const isIn = g === 'insight';
+    $id('modes').classList.toggle('hide', isIn);
+    $id('modes2').classList.toggle('hide', !isIn);
+    $id('controls').classList.toggle('hide', isIn || mode === 'find');
+    ['view-all','view-compare','view-find'].forEach(v =>
+      $id(v).classList.toggle('hide', isIn || v !== 'view-' + mode));
+    ['view-creator','view-movement','view-idea'].forEach(v =>
+      $id(v).classList.toggle('hide', !isIn || v !== 'view-' + IN.mode));
+
+    if (isIn && !IN.data && !IN.loading) await loadInsight();
+  };
+
+  document.getElementById('modes2').onclick = e => {
+    const b = e.target.closest('.mode'); if (!b) return;
+    IN.mode = b.dataset.mode2;
+    document.querySelectorAll('#modes2 .mode').forEach(x => x.classList.toggle('on', x === b));
+    ['creator','movement','idea'].forEach(v =>
+      $id('view-' + v).classList.toggle('hide', v !== IN.mode));
+  };
+
+  // #insight 또는 #insight/movement 처럼 들어오면 해당 화면을 바로 연다.
+  // (돈잘콘에서 특정 뷰로 직접 링크할 때 사용)
+  if (location.hash.startsWith('#insight')) {
+    document.querySelector('.group[data-group="insight"]').click();
+    const sub = location.hash.split('/')[1];
+    if (sub) document.querySelector(`#modes2 .mode[data-mode2="${sub}"]`)?.click();
+  }
+
+  async function loadInsight() {
+    IN.loading = true;
+    $id('creatorTbl').innerHTML =
+      '<tbody><tr><td style="padding:24px;text-align:center;color:var(--sub)">데이터를 불러오는 중…</td></tr></tbody>';
+    try {
+      const [d, h] = await Promise.all([
+        fetch('insight.json?v=' + Date.now()).then(r => r.json()),
+        fetch('history.json?v=' + Date.now()).then(r => r.json()).catch(() => null),
+      ]);
+      IN.data = d; IN.hist = h;
+    } catch (err) {
+      $id('creatorTbl').innerHTML =
+        '<tbody><tr><td style="padding:24px;text-align:center;color:var(--sub)">인사이트 데이터를 불러오지 못했어요.</td></tr></tbody>';
+      IN.loading = false; return;
+    }
+    IN.loading = false;
+    buildInsightPickers();
+    renderCreator(); renderMovement(); renderIdea();
+  }
+
+  /* ── 작가 파워 ── */
+  const CCOLS = [
+    { key:'interest',   label:'관심수',    fmt:r => inum(r.interest) },
+    { key:'total',      label:'출시',      fmt:r => r.total || '-' },
+    { key:'hits',       label:'순위 진입', fmt:r => r.hits },
+    { key:'hitrate',    label:'히트율',    fmt:r => r.total ? ipct(r.hitrate) : '-' },
+    { key:'efficiency', label:'가성비',    fmt:r => r.efficiency ? r.efficiency.toFixed(2) : '-' },
+    { key:'best',       label:'최고',      fmt:r => r.best + '위' },
+  ];
+
+  function renderCreator() {
+    if (!IN.data) return;
+    const D = IN.data, ranked = D.rankings.ALL;
+    const rankOf = new Map(ranked.map((s, i) => [s, i + 1]));
+    const by = new Map();
+    for (const slug of ranked) {
+      const it = D.items[slug]; if (!it || !it.creatorId) continue;
+      let c = by.get(it.creatorId);
+      if (!c) { c = { id:it.creatorId, name:it.creator, interest:it.interestCount ?? 0, total:it.itemCount ?? 0,
+                      hits:0, best:999, topSlug:slug, topTitle:it.title }; by.set(it.creatorId, c); }
+      c.hits++;
+      // 대표작 = 이 작가 이모티콘 중 가장 높은 순위인 것
+      const rk = rankOf.get(slug);
+      if (rk < c.best) { c.best = rk; c.topSlug = slug; c.topTitle = it.title; }
+      c.interest = Math.max(c.interest, it.interestCount ?? 0);
+      c.total = Math.max(c.total, it.itemCount ?? 0);
+    }
+    let rows = [...by.values()].map(c => ({
+      ...c,
+      hitrate: c.total > 0 ? c.hits / c.total : 0,              // 낸 것 대비 순위 진입 비율
+      efficiency: c.interest > 0 ? c.hits / (c.interest / 10000) : 0, // 관심수 1만당 순위 진입 수
+    }));
+    if (IN.cfilter.has('small')) rows = rows.filter(r => r.interest < 50000);
+    if (IN.cfilter.has('few')) rows = rows.filter(r => r.total > 0 && r.total <= 10);
+
+    renderCreatorGuide(rows);   // 기준선 안내는 필터 적용 후·자르기 전 모집단으로 계산
+
+    rows.sort((a, b) => (b[IN.sort] ?? 0) - (a[IN.sort] ?? 0) || a.best - b.best);
+    rows = rows.slice(0, 80);
+
+    const t = $id('creatorTbl');
+    if (!rows.length) {
+      t.innerHTML = '<tbody><tr><td style="padding:24px;text-align:center;color:var(--sub)">조건에 맞는 작가가 없어요.</td></tr></tbody>';
+      return;
+    }
+    const maxI = Math.max(...rows.map(r => r.interest), 1);
+    // 정렬 중인 지표를 작가명 바로 옆으로 끌어올려 모바일에서 가로 스크롤 없이 보이게 한다.
+    const cols = [...CCOLS].sort((a, b) => (b.key === IN.sort) - (a.key === IN.sort));
+    t.innerHTML =
+      `<thead><tr><th>작가</th>${cols.map(c =>
+        `<th${c.key === IN.sort ? ' style="color:var(--lime-ink)"' : ''}>${c.label}</th>`).join('')}</tr></thead>
+       <tbody>${rows.map(r => `<tr>
+         <td>
+           <a class="ilink" href="${creatorUrl(r.id)}" target="_blank" rel="noopener"
+              title="${iesc(r.name)} 작가의 이모티콘 보기">${iesc(r.name)} <span class="iext">↗</span></a>
+           <span class="iband" title="관심수 구간 — 가성비는 같은 구간끼리 비교하세요">${bandOf(r.interest).label}</span>
+           <div style="margin-top:4px"><span class="ibar" style="width:${Math.max(2, r.interest / maxI * 100)}%"></span></div>
+           <a class="isub" href="${itemUrl(r.topSlug)}" target="_blank" rel="noopener"
+              title="${iesc(r.topTitle ?? '')} 보기">${iesc(r.topTitle ?? '')}</a></td>
+         ${cols.map(c => `<td class="${c.key === IN.sort ? 'hi' : ''}">${c.fmt(r)}</td>`).join('')}
+       </tr>`).join('')}</tbody>`;
+  }
+
+  /* 관심수 구간. 가성비는 분모가 관심수라 팔로워가 적을수록 자동으로 커진다.
+     그래서 절대값 비교는 의미가 없고 '같은 구간 안에서' 봐야 한다. */
+  const BANDS = [
+    { max: 5000,   label: '~5천' },
+    { max: 20000,  label: '5천~2만' },
+    { max: 50000,  label: '2만~5만' },
+    { max: Infinity, label: '5만+' },
+  ];
+  const bandOf = n => BANDS.find(b => n < b.max) ?? BANDS[BANDS.length - 1];
+
+  const median = arr => {
+    if (!arr.length) return 0;
+    const s = [...arr].sort((a, b) => a - b);
+    return s[Math.floor(s.length / 2)];
+  };
+
+  /* 정렬 중인 지표를 '어떻게 읽어야 하는지' 현재 데이터 기준으로 설명한다.
+     기준값은 하드코딩하지 않고 매번 계산 — 데이터가 주마다 바뀌기 때문. */
+  function renderCreatorGuide(rows) {
+    const g = $id('creatorGuide');
+    if (!rows.length) { g.innerHTML = ''; return; }
+    const mid = {
+      interest:   median(rows.map(r => r.interest)),
+      hits:       median(rows.map(r => r.hits)),
+      hitrate:    median(rows.filter(r => r.total >= 3).map(r => r.hitrate)),
+      efficiency: median(rows.filter(r => r.efficiency > 0).map(r => r.efficiency)),
+    };
+    const txt = {
+      interest:   `작가 ${rows.length}명 중앙값 <b>${inum(mid.interest)}명</b>. 관심수는 그동안 쌓인 팬 규모라, 최근 성과와는 다를 수 있어요.`,
+      hits:       `중앙값 <b>${mid.hits}개</b>. 많이 낸 작가가 유리하니 <b>히트율</b>과 같이 보세요.`,
+      hitrate:    `중앙값 <b>${ipct(mid.hitrate)}</b> — 낸 것 중 이 정도가 순위에 들면 평균이에요. 팔로워 수와 무관해서 <b>가장 공정한 지표</b>입니다.`,
+      efficiency: `중앙값 <b>${mid.efficiency.toFixed(2)}</b>. 다만 <b style="color:#ea580c">가성비는 팔로워가 적을수록 자동으로 커집니다</b>
+                   (분모가 관심수라서요). 그래서 1등이 실력 1등이라는 뜻이 아니라, <b>같은 관심수 구간끼리만</b> 비교하셔야 해요.
+                   작가 이름 옆 회색 배지가 구간입니다.`,
+    };
+    g.innerHTML = txt[IN.sort] ?? '';
+  }
+
+  /* ── 순위 변동 ── */
+  function buildInsightPickers() {
+    const D = IN.data, H = IN.hist;
+    const bandHtml = D.ageBands.map(b =>
+      `<button class="${b.key === 'ALL' ? 'on' : ''}" data-band="${b.key}">${b.label}</button>`).join('');
+    $id('mvBand').innerHTML = bandHtml;
+    $id('ideaBand').innerHTML = bandHtml;
+    $id('mvBand').onclick = e => {
+      const b = e.target.closest('button'); if (!b) return;
+      IN.band = b.dataset.band;
+      $id('mvBand').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+      renderMovement();
+    };
+    $id('ideaBand').onclick = e => {
+      const b = e.target.closest('button'); if (!b) return;
+      IN.ideaBand = b.dataset.band;
+      $id('ideaBand').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+      renderIdea();
+    };
+    if (H && H.dates.length > 1) {
+      IN.dateIdx = H.dates.length - 1;
+      $id('mvDate').innerHTML = H.dates.slice(1).map((d, i) =>
+        `<button class="${i === H.dates.length - 2 ? 'on' : ''}" data-di="${i + 1}">${H.dates[i].slice(5)}→${d.slice(5)}</button>`).join('');
+      $id('mvDate').onclick = e => {
+        const b = e.target.closest('button'); if (!b) return;
+        IN.dateIdx = +b.dataset.di;
+        $id('mvDate').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+        renderMovement();
+      };
+    }
+    $id('creatorSort').onclick = e => {
+      const b = e.target.closest('button'); if (!b) return;
+      IN.sort = b.dataset.sort;
+      $id('creatorSort').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+      renderCreator();
+    };
+    $id('creatorFilter').onclick = e => {
+      const b = e.target.closest('button'); if (!b) return;
+      const k = b.dataset.cf;
+      IN.cfilter.has(k) ? IN.cfilter.delete(k) : IN.cfilter.add(k);
+      b.classList.toggle('on', IN.cfilter.has(k));
+      renderCreator();
+    };
+    $id('ideaView').onclick = e => {
+      const b = e.target.closest('button'); if (!b) return;
+      IN.ideaView = b.dataset.idea;
+      $id('ideaView').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+      renderIdea();
+    };
+  }
+
+  function renderMovement() {
+    const box = $id('mvBody'), H = IN.hist, D = IN.data;
+    if (!H || H.dates.length < 2) { box.innerHTML = '<div class="iempty">비교할 스냅샷이 아직 2개 미만이에요.</div>'; return; }
+    const i = IN.dateIdx ?? H.dates.length - 1;
+    const prev = H.snapshots[i - 1], cur = H.snapshots[i];
+    const pa = prev.rankings[IN.band] || [], ca = cur.rankings[IN.band] || [];
+    if (!ca.length) { box.innerHTML = '<div class="iempty">해당 연령대 데이터가 없어요.</div>'; return; }
+    const pr = new Map(pa.map((s, x) => [s, x + 1])), cr = new Map(ca.map((s, x) => [s, x + 1]));
+
+    const moved = ca.filter(s => pr.has(s)).map(s => ({ slug:s, cur:cr.get(s), delta:pr.get(s) - cr.get(s) }));
+    const ups = moved.filter(m => m.delta > 0).sort((a, b) => b.delta - a.delta).slice(0, 15);
+    const downs = moved.filter(m => m.delta < 0).sort((a, b) => a.delta - b.delta).slice(0, 15);
+    const news = ca.filter(s => !pr.has(s)).map(s => ({ slug:s, cur:cr.get(s), delta:null })).slice(0, 20);
+    const sets = H.snapshots.map(s => new Set(s.rankings[IN.band] || []));
+    const longRun = ca.filter(s => sets.every(st => st.has(s)))
+      .map(s => ({ slug:s, cur:cr.get(s), delta:null })).slice(0, 20);
+
+    const row = (m, kind) => {
+      const it = H.items[m.slug] || D.items[m.slug] || {};
+      const img = D.items[m.slug]?.image;
+      const d = m.delta;
+      const dtxt = kind === 'new' ? '<span class="inew">NEW</span>'
+        : d === null ? `<span class="inew">${H.dates.length}주 연속</span>`
+        : d > 0 ? `<span class="iup">▲ ${d}</span>` : `<span class="idown">▼ ${-d}</span>`;
+      return `<a class="irow" href="${itemUrl(m.slug)}" target="_blank" rel="noopener">
+        <div class="irank">${m.cur}</div>
+        ${img ? `<img class="ithumb" src="${iesc(img)}" loading="lazy" alt="">` : '<div class="ithumb"></div>'}
+        <div class="iinfo"><div class="ittl">${iesc(it.title || m.slug)} <span class="iext">↗</span></div>
+          <div class="imeta">${iesc(it.creator || '')}</div></div>
+        <div class="idelta">${dtxt}</div></a>`;
+    };
+    const sec = (title, hint, arr, kind) =>
+      `<div class="ih3">${title}</div>${hint ? `<p class="ihint">${hint}</p>` : ''}
+       ${arr.length ? `<div class="ilist">${arr.map(m => row(m, kind)).join('')}</div>` : '<div class="iempty">해당 없음</div>'}`;
+
+    box.innerHTML =
+        sec(`▲ 급상승 <span style="color:var(--sub);font-weight:400">${prev.date.slice(5)} → ${cur.date.slice(5)}</span>`, '', ups, 'up')
+      + sec('★ 신규 진입', '이전 시점엔 없다가 새로 순위에 든 이모티콘이에요.', news, 'new')
+      + sec(`⏳ 롱런 <span style="color:var(--sub);font-weight:400">${H.dates.length}주 내내 유지</span>`,
+            '전 기간 순위를 지킨 이모티콘 — 오래 팔리는 소재의 힌트예요.', longRun, 'long')
+      + sec('▼ 급하락', '', downs, 'down');
+  }
+
+  /* ── 제작 아이디어 ── */
+  function tagStats(band) {
+    const D = IN.data;
+    const demand = D.rankings[band] || D.rankings.ALL, supply = D.supplySlugs;
+    // 카테고리와 같은 이름의 태그는 표본 편향(카테고리별 정액 수집) 대상 → 별도 표시
+    const catNames = new Set(D.styles.map(s => '#' + s.title.replace(/\s/g, '_')));
+    const catBare = D.styles.map(s => s.title.replace(/\s/g, ''));
+    const count = slugs => {
+      const m = new Map();
+      for (const s of slugs) for (const t of (D.items[s]?.tags || [])) m.set(t, (m.get(t) ?? 0) + 1);
+      return m;
+    };
+    const dem = count(demand), sup = count(supply);
+    const nd = demand.length, ns = supply.length;
+    return [...dem.entries()].map(([tag, dc]) => {
+      const sc = sup.get(tag) ?? 0, dr = dc / nd, sr = sc / ns;
+      return { tag, dc, sc, dr, sr, ratio: sr > 0 ? dr / sr : null,
+               biased: catNames.has(tag) || catBare.includes(tag.replace(/^#/, '').replace(/_/g, '')) };
+    });
+  }
+
+  function renderIdea() {
+    const box = $id('ideaBody'), D = IN.data, v = IN.ideaView;
+    // 보기·연령대를 바꾸면 이전에 펼쳐둔 태그 결과는 더 이상 맞지 않으므로 닫는다.
+    const drill = $id('ideaDrill');
+    if (drill) { drill.classList.add('hide'); drill.innerHTML = ''; }
+
+    if (v === 'token') {
+      const NOISE = new Set(['ver','vol','season','new','the','and','for']);
+      /* 한 작가가 시리즈를 여러 개 내면 캐릭터명이 반복 집계된다(예: '가나디' 8회 = 전부 한 작가).
+         그래서 '이 단어를 쓴 서로 다른 작가 수'를 함께 세고, 1명짜리는 기본 제외한다. */
+      const tok = slugs => {
+        const cnt = new Map(), who = new Map();
+        for (const s of slugs) {
+          const it = D.items[s]; if (!it) continue;
+          for (const t of (it.tokens || [])) {
+            if (NOISE.has(t.toLowerCase())) continue;
+            cnt.set(t, (cnt.get(t) ?? 0) + 1);
+            if (!who.has(t)) who.set(t, new Set());
+            who.get(t).add(it.creatorId || it.creator);
+          }
+        }
+        return { cnt, who };
+      };
+      const dem = tok(D.rankings[IN.ideaBand] || D.rankings.ALL), sup = tok(D.supplySlugs);
+      const rows = [...dem.cnt.entries()]
+        .map(([w, c]) => ({ w, c, s: sup.cnt.get(w) ?? 0, cr: dem.who.get(w).size }))
+        .filter(r => r.c >= 3 && (IN.showBrand || r.cr >= 2))
+        .sort((a, b) => b.cr - a.cr || b.c - a.c).slice(0, 40);
+      box.innerHTML = `
+        <div class="ih3">제목에 많이 쓰인 단어</div>
+        <p class="ihint">순위권 제목에서 2글자 이상 단어를 뽑아 셌어요. <b>작가 수</b>가 1명이면 트렌드가 아니라
+          그 작가의 캐릭터 이름(가나디, 루피 등)이라 기본 제외합니다.</p>
+        <div class="ipick"><button id="brandTg" class="${IN.showBrand ? 'on' : ''}">캐릭터 이름도 보기</button></div>
+        <div class="itblwrap"><table class="itbl">
+          <thead><tr><th>단어</th><th style="color:var(--lime-ink)">작가 수</th><th>순위권</th><th>신상</th></tr></thead>
+          <tbody>${rows.length ? rows.map(r =>
+            `<tr><td>${iesc(r.w)}</td><td class="hi">${r.cr}</td><td>${r.c}</td><td>${r.s}</td></tr>`).join('')
+            : '<tr><td colspan="4" style="text-align:center;color:var(--sub);padding:22px">해당 없음</td></tr>'}</tbody>
+        </table></div>`;
+      $id('brandTg').onclick = () => { IN.showBrand = !IN.showBrand; renderIdea(); };
+      return;
+    }
+
+    if (v === 'ageskew') {
+      const allMap = new Map(tagStats('ALL').map(r => [r.tag, r.dr]));
+      box.innerHTML = '<p class="ihint">전체 평균 대비 그 연령대에서 유독 강한 태그예요. 타겟을 정해 만들 때 참고하세요.</p>'
+        + D.ageBands.filter(b => b.key !== 'ALL').map(b => {
+          const rows = tagStats(b.key).filter(r => r.dc >= 5 && allMap.get(r.tag))
+            .map(r => ({ ...r, skew: r.dr / allMap.get(r.tag) }))
+            .sort((x, y) => y.skew - x.skew).slice(0, 5);
+          return `<div class="ih3">${b.label}</div>
+            <div class="itblwrap"><table class="itbl">
+              <thead><tr><th>태그</th><th>이 연령대</th><th>전체</th><th style="color:var(--lime-ink)">편중</th></tr></thead>
+              <tbody>${rows.map(r => `<tr><td>${iesc(r.tag)}</td><td>${ipct(r.dr)}</td>
+                <td>${ipct(allMap.get(r.tag))}</td><td class="hi">${r.skew.toFixed(2)}x</td></tr>`).join('')}</tbody>
+            </table></div>`;
+        }).join('');
+      return;
+    }
+
+    const stats = tagStats(IN.ideaBand).filter(r => r.dc >= 5 && r.ratio !== null);
+    const rows = (v === 'gap' ? stats.sort((a, b) => b.ratio - a.ratio)
+                              : stats.sort((a, b) => a.ratio - b.ratio)).slice(0, 30);
+    const anyBiased = rows.some(r => r.biased);
+    box.innerHTML = `
+      <div class="ih3">${v === 'gap' ? '빈틈 — 적게 나왔는데 잘 되는 소재' : '과잉 — 많이 나왔는데 덜 되는 소재'}</div>
+      <p class="ihint">수요율 = 인기 ${inum((D.rankings[IN.ideaBand] || D.rankings.ALL).length)}위 중 비율 ·
+        공급율 = 최근 신상 ${inum(D.supplySlugs.length)}개 중 비율 · 배율 = 수요율 ÷ 공급율.
+        ${anyBiased ? '<br><b style="color:#ea580c">※</b>가 붙은 태그는 카테고리별로 같은 수(100개)씩 표본을 뽑은 탓에 공급율이 부풀려진 것이라 신호로 보기 어려워요.' : ''}</p>
+      <div class="itblwrap"><table class="itbl">
+        <thead><tr><th>태그</th><th style="color:var(--lime-ink)">배율</th><th>수요</th><th>공급</th><th>수요율</th><th>공급율</th></tr></thead>
+        <tbody>${rows.map(r => `<tr>
+          <td><button class="itag" data-tag="${iesc(r.tag)}"
+                title="${iesc(r.tag)} 태그가 붙은 이모티콘 보기">${iesc(r.tag)} <span class="iext">›</span></button>${r.biased ? ' <b style="color:#ea580c">※</b>' : ''}</td>
+          <td class="hi">${r.ratio.toFixed(2)}x</td><td>${r.dc}</td><td>${r.sc}</td>
+          <td>${ipct(r.dr)}</td><td>${ipct(r.sr)}</td></tr>`).join('')}</tbody>
+      </table></div>`;
+    box.onclick = e => {
+      const b = e.target.closest('.itag'); if (!b) return;
+      showTagInline(b.dataset.tag, IN.ideaBand);
+    };
+  }
   document.getElementById('metric').onclick = e => {
     const b = e.target.closest('button'); if (!b) return;
     metric = b.dataset.m;
@@ -565,6 +1061,33 @@ function renderCompare() {
 
   document.getElementById('matrix').innerHTML = head + (rows.length ? body :
     `<tbody><tr><td colspan="${bands.length+1}" style="padding:40px;color:var(--sub)">해당 카테고리 태그가 없어요.</td></tr></tbody>`);
+}
+
+/* [제작 아이디어]의 태그를 눌렀을 때 그 자리에서 결과를 펼친다.
+   화면을 [태그로 찾기]로 넘겨버리면 보고 있던 표를 잃어버리므로 이동시키지 않는다.
+   카드는 태그로 찾기가 쓰던 emCardHTML을 그대로 재사용 — 링크·순위 배지·태그 강조가 따라온다. */
+function showTagInline(tag, band) {
+  const key = band || 'ALL';
+  const items = DATA.rankings[key]
+    .map((slug, i) => ({ slug, ...DATA.items[slug], rank: i + 1 }))
+    .filter(it => (it.tags || []).some(x => x.tag === tag));
+  const bandLabel = DATA.ageBands.find(b => b.key === key)?.label ?? '전체';
+
+  const panel = document.getElementById('ideaDrill');
+  panel.innerHTML = `
+    <div class="drillhead">
+      <div><b>${esc(tag)}</b> <span class="dsub">· ${bandLabel} 순위 ${items.length}개</span></div>
+      <button class="dclose" id="drillClose">닫기 ✕</button>
+    </div>
+    ${items.length
+      ? `<div class="emgrid">${items.map(it => emCardHTML(it, [tag])).join('')}</div>`
+      : '<div class="iempty">이 순위권에는 해당 태그가 붙은 이모티콘이 없어요.</div>'}`;
+  panel.classList.remove('hide');
+  document.getElementById('drillClose').onclick = () => {
+    panel.classList.add('hide');
+    panel.innerHTML = '';
+  };
+  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function renderFind() {
